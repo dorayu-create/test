@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Zenith 2026 | 年度策略管理系統</title>
+    <title>Zenith 2026 | 高階年度策略管理系統</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,8 +13,7 @@
     <style>
         :root {
             --paper: #fdfcfb;
-            --ink: #1e293b;
-            --primary: #2563eb;
+            --ink: #0f172a;
         }
         body { 
             font-family: 'Plus Jakarta Sans', 'Noto Sans TC', sans-serif;
@@ -26,19 +25,16 @@
             -webkit-font-smoothing: antialiased;
         }
         #root { height: 100vh; overflow: hidden; }
-        .error-overlay { 
-            position: fixed; inset: 0; background: white; z-index: 9999;
-            display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;
-        }
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
         
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loader-spin { animation: spin 0.8s linear infinite; }
+        .grid-cell-animate { transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
     </style>
 
     <script>
-        // 解決 @google/genai 在瀏覽器環境缺少 process 的問題
+        // CRITICAL: Prevent process is not defined error for Gemini SDK
         window.process = { env: { API_KEY: "" } };
         window.global = window;
     </script>
@@ -61,48 +57,24 @@
 <body>
     <div id="root">
         <div style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fdfcfb;">
-            <div style="width: 32px; height: 32px; border: 3px solid #f1f5f9; border-top: 3px solid #2563eb; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
-            <div style="margin-top: 20px; font-size: 11px; font-weight: 800; letter-spacing: 0.2em; color: #94a3b8; text-transform: uppercase;">Initializing System</div>
+            <div style="width: 32px; height: 32px; border: 3px solid #f1f5f9; border-top: 3px solid #0f172a; border-radius: 50%;" class="loader-spin"></div>
+            <div style="margin-top: 20px; font-size: 10px; font-weight: 800; letter-spacing: 0.2em; color: #94a3b8; text-transform: uppercase;">Booting Zenith System</div>
         </div>
     </div>
     
-    <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
-
-    <div id="error-display" class="error-overlay">
-        <h1 style="color: #ef4444; font-weight: 900; margin-bottom: 8px; font-size: 24px;">SYSTEM ERROR</h1>
-        <p id="error-message" style="color: #64748b; font-size: 12px; font-family: monospace; max-width: 400px; line-height: 1.6;"></p>
-        <button onclick="localStorage.clear(); location.reload();" style="margin-top: 24px; background: #1e293b; color: white; padding: 12px 28px; border-radius: 12px; font-weight: 800; cursor: pointer; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">CLEAR CACHE & REBOOT</button>
+    <div id="error-display" style="position: fixed; inset: 0; background: white; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;">
+        <h1 style="color: #ef4444; font-weight: 900; margin-bottom: 8px;">SYSTEM ERROR</h1>
+        <p id="error-message" style="color: #64748b; font-size: 12px; font-family: monospace; max-width: 400px;"></p>
+        <button onclick="localStorage.clear(); location.reload();" style="margin-top: 24px; background: #0f172a; color: white; padding: 12px 28px; border-radius: 12px; font-weight: 800; cursor: pointer; border: none;">REBOOT</button>
     </div>
 
     <script>
-        const showError = (msg) => {
+        window.onerror = (msg) => {
             document.getElementById('error-display').style.display = 'flex';
             document.getElementById('error-message').textContent = msg;
         };
-        window.onerror = (msg) => showError(msg);
-        window.onunhandledrejection = (e) => showError(e.reason || 'Unhandled Promise Rejection');
-     
     </script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-<script type="text/babel" data-presets="react,typescript">
-  // 這裡直接貼上原本 index.tsx 的內容
-  const { useState } = React;
-  const { createRoot } = ReactDOM;
-  // 記得從全域取得 Lucide 圖標，或者透過 importmap 引入的命名空間
-  
-  const App = () => {
-    return (
-      <div className="p-10 text-center">
-        <h1 className="text-4xl font-black text-blue-600">Zenith 2026 啟動成功</h1>
-        <p className="mt-4 text-slate-500">瀏覽器端編譯已就緒。</p>
-      </div>
-    );
-  };
-
-  const root = createRoot(document.getElementById('root'));
-  root.render(<App />);
-</script>
-   
+    
+    <script type="module" src="index.tsx"></script>
 </body>
 </html>
