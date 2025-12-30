@@ -1,8 +1,7 @@
-
 import React from 'react';
-import { Goal, YearStats } from '../types';
-import { CATEGORY_ICONS } from '../constants';
-import { formatPercent, getEfficiencyStatus } from '../utils';
+import { Goal, YearStats } from '../types.ts';
+import { CATEGORY_ICONS } from '../constants.tsx';
+import { formatPercent, getEfficiencyStatus } from '../utils.ts';
 import { Edit2, Plus, Minus, Trash2 } from 'lucide-react';
 
 interface GoalCardProps {

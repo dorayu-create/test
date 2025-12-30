@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -32,6 +31,14 @@
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        /* 針對 iOS 安全區域優化 */
+        @supports (padding-top: env(safe-area-inset-top)) {
+            header {
+                padding-top: env(safe-area-inset-top);
+                height: calc(3.5rem + env(safe-area-inset-top));
+            }
+        }
     </style>
 
     <script>
@@ -59,7 +66,7 @@
     <div id="root">
         <div style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #64748b; background: #f8fafc;">
             <div style="width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top: 4px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px;"></div>
-            <div style="font-weight: 800; font-size: 14px; letter-spacing: 0.05em;">ZENITH 系統載入中...</div>
+            <div style="font-weight: 800; font-size: 14px; letter-spacing: 0.05em; font-family: sans-serif;">ZENITH 系統啟動中...</div>
         </div>
     </div>
     
@@ -75,8 +82,12 @@
 
     <script>
         const handleError = (msg) => {
-            document.getElementById('error-display').style.display = 'flex';
-            document.getElementById('error-message').textContent = msg;
+            const display = document.getElementById('error-display');
+            const message = document.getElementById('error-message');
+            if (display && message) {
+                display.style.display = 'flex';
+                message.textContent = msg;
+            }
         };
         window.onerror = (msg) => handleError(msg);
         window.onunhandledrejection = (e) => handleError(e.reason || e);
