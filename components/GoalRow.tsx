@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { Goal } from '../types';
-import { formatPercent, getEfficiencyStatus } from '../utils';
+import { Goal } from '../types.ts';
+import { getEfficiencyStatus } from '../utils.ts';
 import { Check } from 'lucide-react';
 
 interface GoalRowProps {
@@ -16,25 +16,13 @@ interface GoalRowProps {
 }
 
 const GoalRow: React.FC<GoalRowProps> = ({ 
-  goal, 
-  yearProgress, 
-  monthDays, 
-  onLog, 
-  onEdit, 
-  isViewMode = false,
-  gridTemplateMobile,
-  gridTemplateDesktop
+  goal, yearProgress, monthDays, onLog, onEdit, isViewMode = false,
+  gridTemplateMobile, gridTemplateDesktop
 }) => {
   const achievementRate = (goal.actual / goal.target) * 100;
   const remaining = Math.max(0, goal.target - goal.actual);
   const efficiency = getEfficiencyStatus(achievementRate, yearProgress);
-
-  const getBarColor = () => {
-    if (achievementRate >= 100) return 'bg-red-600';
-    if (achievementRate >= 50) return 'bg-slate-600';
-    return 'bg-slate-300';
-  };
-
+  const getBarColor = () => achievementRate >= 100 ? 'bg-red-600' : achievementRate >= 50 ? 'bg-slate-600' : 'bg-slate-300';
   const isMobile = window.innerWidth < 768;
 
   return (
@@ -42,25 +30,18 @@ const GoalRow: React.FC<GoalRowProps> = ({
       className="grid items-stretch border-b border-gray-100 group bg-white hover:bg-slate-50/50 transition-colors"
       style={{ gridTemplateColumns: isMobile ? gridTemplateMobile : gridTemplateDesktop }}
     >
-      {/* KR - Desktop Only */}
       <div className="hidden md:flex p-3 text-[10px] font-black text-slate-400 border-r border-gray-100 items-center justify-center text-center uppercase">
         {goal.krNumber || 'KR'}
       </div>
-
-      {/* Title Column - Sticky on all devices with shadow */}
       <div 
         className={`p-3 border-r border-gray-100 flex items-center justify-between sticky left-0 z-20 bg-white group-hover:bg-blue-50/40 shadow-[2px_0_8px_rgba(0,0,0,0.05)] transition-colors ${isViewMode ? 'cursor-default' : 'cursor-pointer'}`} 
         onClick={() => !isViewMode && onEdit(goal)}
       >
         <div className="min-w-0 w-full">
-          <p className={`text-[10px] sm:text-xs font-black truncate leading-tight ${!isViewMode ? 'text-slate-800 group-hover:text-blue-600' : 'text-slate-600'}`}>
-            {goal.title}
-          </p>
+          <p className={`text-[10px] sm:text-xs font-black truncate leading-tight ${!isViewMode ? 'text-slate-800 group-hover:text-blue-600' : 'text-slate-600'}`}>{goal.title}</p>
           <p className="text-[7px] text-slate-400 font-bold uppercase truncate tracking-widest">{goal.category}</p>
         </div>
       </div>
-
-      {/* Stats - Desktop Only */}
       <div className="hidden md:flex p-3 text-center border-r border-gray-100 text-[11px] font-bold text-slate-500 items-center justify-center font-mono">{goal.target}</div>
       <div className="hidden md:flex p-3 text-center border-r border-gray-100 text-[11px] font-black text-blue-700 bg-blue-50/20 items-center justify-center font-mono">{goal.actual}</div>
       <div className="hidden md:flex p-3 text-center border-r border-gray-100 text-[11px] font-bold text-slate-400 items-center justify-center font-mono">{remaining}</div>
@@ -73,26 +54,18 @@ const GoalRow: React.FC<GoalRowProps> = ({
         </div>
         <span className="text-[10px]">{efficiency.icon}</span>
       </div>
-
-      {/* Date Logic - Map through current month days */}
       {monthDays.map(d => {
         const isLogged = goal.logs.some(l => l.date === d.iso);
         return (
           <button
-            key={d.iso}
-            disabled={isViewMode}
-            onClick={() => onLog(goal.id, d.iso)}
-            className={`w-8 min-h-[52px] border-r border-gray-50 flex items-center justify-center transition-all ${
-              d.isWeekend ? 'bg-slate-50/50' : ''
-            } ${isViewMode ? 'cursor-default' : 'hover:bg-blue-100 active:bg-blue-200'}`}
+            key={d.iso} disabled={isViewMode} onClick={() => onLog(goal.id, d.iso)}
+            className={`w-8 min-h-[52px] border-r border-gray-50 flex items-center justify-center transition-all ${d.isWeekend ? 'bg-slate-50/50' : ''} ${isViewMode ? 'cursor-default' : 'hover:bg-blue-100 active:bg-blue-200'}`}
           >
             {isLogged ? (
               <div className={`w-5 h-5 rounded-md flex items-center justify-center shadow-sm ${isViewMode ? 'bg-slate-400' : 'bg-blue-600 scale-110'}`}>
                 <Check className="w-3.5 h-3.5 text-white stroke-[3]" />
               </div>
-            ) : (
-              <div className="w-4 h-4 border border-slate-200 rounded-sm hover:border-blue-400 transition-colors" />
-            )}
+            ) : <div className="w-4 h-4 border border-slate-200 rounded-sm hover:border-blue-400" />}
           </button>
         );
       })}

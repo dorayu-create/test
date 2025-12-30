@@ -1,14 +1,14 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Target, Plus, Download, Upload, RefreshCw, Share2, Lock, Save, ArrowLeft, Zap } from 'lucide-react';
-import { Goal, GoalCategory, YearStats } from './types';
-import { STORAGE_KEYS } from './constants';
-import { getYearStats, getDaysInMonth, decodeDataFromUrl } from './utils';
-import Dashboard from './components/Dashboard';
-import GoalRow from './components/GoalRow';
-import GoalModal from './components/GoalModal';
-import ShareModal from './components/ShareModal';
-import AICoachPanel from './components/AICoachPanel';
+import { Target, Plus, Share2, Zap } from 'lucide-react';
+import { Goal, GoalCategory, YearStats } from './types.ts';
+import { STORAGE_KEYS } from './constants.tsx';
+import { getYearStats, getDaysInMonth, decodeDataFromUrl } from './utils.ts';
+import Dashboard from './components/Dashboard.tsx';
+import GoalRow from './components/GoalRow.tsx';
+import GoalModal from './components/GoalModal.tsx';
+import ShareModal from './components/ShareModal.tsx';
+import AICoachPanel from './components/AICoachPanel.tsx';
 
 const TARGET_YEAR = 2026;
 
@@ -25,7 +25,6 @@ const App: React.FC = () => {
   const yearKey = `${STORAGE_KEYS.GOALS}_${TARGET_YEAR}`;
   const monthDays = useMemo(() => getDaysInMonth(TARGET_YEAR, selectedMonth), [selectedMonth]);
 
-  // 動態生成 Grid Columns 樣式
   const gridTemplateMobile = `100px repeat(${monthDays.length}, 32px)`;
   const gridTemplateDesktop = `80px 200px 70px 70px 70px 70px 180px repeat(${monthDays.length}, 32px)`;
 
@@ -82,7 +81,7 @@ const App: React.FC = () => {
       localStorage.setItem(yearKey, JSON.stringify(goals));
       setIsViewMode(false);
       window.history.replaceState(null, "", window.location.pathname);
-      alert('匯入成功！現在這是屬於您的計畫了，開始行動吧！');
+      alert('匯入成功！現在這是屬於您的計畫了。');
     }
   };
 
@@ -131,7 +130,6 @@ const App: React.FC = () => {
 
   return (
     <div className="h-screen flex flex-col font-sans select-none bg-[#f8fafc]">
-      {/* 唯讀模式 Banner */}
       {isViewMode && (
         <div className="bg-blue-600 text-white px-4 py-2 flex items-center justify-between text-[10px] sm:text-[11px] font-black uppercase tracking-wider z-[60] shadow-lg shrink-0">
           <div className="flex items-center space-x-2">
@@ -150,7 +148,6 @@ const App: React.FC = () => {
           <Target className="text-blue-500 w-5 h-5" />
           <h1 className="text-sm font-black tracking-tighter uppercase">Zenith 2026</h1>
         </div>
-        
         <div className="flex items-center space-x-2">
           {!isViewMode && (
             <button onClick={() => setIsShareModalOpen(true)} className="bg-blue-600 text-white p-2 rounded-lg shadow-lg active:scale-95">
@@ -169,19 +166,12 @@ const App: React.FC = () => {
       <main className="flex-1 overflow-y-auto custom-scrollbar">
         <div className="p-3 sm:p-6 max-w-[1600px] mx-auto space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-1">
-              <Dashboard stats={stats} />
-            </div>
-            <div className="lg:col-span-2">
-              <AICoachPanel goals={goals} stats={stats} />
-            </div>
+            <div className="lg:col-span-1"><Dashboard stats={stats} /></div>
+            <div className="lg:col-span-2"><AICoachPanel goals={goals} stats={stats} /></div>
           </div>
-
-          {/* 表格容器：整合水平捲軸 */}
           <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
             <div className="overflow-x-auto no-scrollbar touch-pan-x bg-white">
               <div className="min-w-max">
-                {/* 表格標題 */}
                 <div 
                   className="grid bg-slate-800 text-white text-[9px] sm:text-[10px] font-black uppercase sticky top-0 z-30"
                   style={{ gridTemplateColumns: window.innerWidth < 768 ? gridTemplateMobile : gridTemplateDesktop }}
@@ -193,7 +183,6 @@ const App: React.FC = () => {
                   <div className="hidden md:flex p-3 border-r border-slate-700 items-center justify-center">剩餘</div>
                   <div className="hidden md:flex p-3 border-r border-slate-700 items-center justify-center text-emerald-400">％</div>
                   <div className="hidden md:flex p-3 border-r border-slate-700 items-center justify-center">進度視覺</div>
-                  
                   {monthDays.map(d => (
                     <div key={d.iso} className={`w-8 border-r border-slate-700 flex flex-col items-center justify-center py-1.5 ${d.isWeekend ? 'bg-slate-700' : ''}`}>
                       <span className="opacity-50 text-[7px] font-bold">{d.weekDay}</span>
@@ -201,27 +190,14 @@ const App: React.FC = () => {
                     </div>
                   ))}
                 </div>
-
-                {/* 表格內容 */}
                 <div className="divide-y divide-gray-100">
                   {goals.map(goal => (
                     <GoalRow 
-                      key={goal.id}
-                      goal={goal}
-                      yearProgress={stats.yearProgress}
-                      monthDays={monthDays}
-                      onLog={handleLog}
+                      key={goal.id} goal={goal} yearProgress={stats.yearProgress} monthDays={monthDays} onLog={handleLog}
                       onEdit={(g) => { if(!isViewMode) { setEditingGoal(g); setIsModalOpen(true); } }}
-                      isViewMode={isViewMode}
-                      gridTemplateMobile={gridTemplateMobile}
-                      gridTemplateDesktop={gridTemplateDesktop}
+                      isViewMode={isViewMode} gridTemplateMobile={gridTemplateMobile} gridTemplateDesktop={gridTemplateDesktop}
                     />
                   ))}
-                  {goals.length === 0 && (
-                    <div className="py-20 text-center text-slate-400 font-bold uppercase tracking-widest text-xs bg-slate-50">
-                      尚未建立任何指標，請點擊右上角新增
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
@@ -232,17 +208,12 @@ const App: React.FC = () => {
       <footer className="bg-white border-t border-gray-200 shrink-0 p-2 shadow-[0_-4px_15px_rgba(0,0,0,0.05)] pb-[env(safe-area-inset-bottom)]">
         <div className="flex items-center space-x-1 overflow-x-auto no-scrollbar max-w-full justify-start sm:justify-center">
            {[...Array(12)].map((_, i) => (
-             <button 
-               key={i} 
-               onClick={() => setSelectedMonth(i)} 
-               className={`px-4 py-2 text-[11px] font-black rounded-xl transition-all whitespace-nowrap shrink-0 ${selectedMonth === i ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-100'}`}
-             >
+             <button key={i} onClick={() => setSelectedMonth(i)} className={`px-4 py-2 text-[11px] font-black rounded-xl transition-all whitespace-nowrap shrink-0 ${selectedMonth === i ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-100'}`}>
                {i + 1}月
              </button>
            ))}
         </div>
       </footer>
-
       <GoalModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={handleSaveGoal} editingGoal={editingGoal} />
       <ShareModal isOpen={isShareModalOpen} onClose={() => setIsShareModalOpen(false)} currentGoals={goals} />
     </div>

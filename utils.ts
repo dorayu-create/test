@@ -1,5 +1,5 @@
 
-import { YearStats, Goal } from './types';
+import { YearStats, Goal } from './types.ts';
 
 export const getYearStats = (targetYear: number = 2026): YearStats => {
   const now = new Date();
@@ -56,43 +56,20 @@ export const getDaysInMonth = (year: number, month: number) => {
   return days;
 };
 
-/**
- * 壓縮數據：移除冗餘欄位以縮短 URL 長度
- */
 const compressGoals = (goals: Goal[]): any[] => {
   return goals.map(g => ({
-    i: g.id,
-    t: g.title,
-    c: g.category,
-    k: g.krNumber,
-    tg: g.target,
-    a: g.actual,
-    u: g.unit,
+    i: g.id, t: g.title, c: g.category, k: g.krNumber, tg: g.target, a: g.actual, u: g.unit,
     l: g.logs.map(log => ({ d: log.date, v: log.value }))
   }));
 };
 
-/**
- * 解壓縮數據
- */
 const decompressGoals = (data: any[]): Goal[] => {
   return data.map(g => ({
-    id: g.i,
-    title: g.t,
-    category: g.c,
-    krNumber: g.k,
-    target: g.tg,
-    actual: g.a,
-    unit: g.u,
-    description: '', // 同步時省略描述
-    logs: g.l.map((log: any) => ({ date: log.d, value: log.v })),
-    createdAt: Date.now()
+    id: g.i, title: g.t, category: g.c, krNumber: g.k, target: g.tg, actual: g.a, unit: g.u,
+    description: '', logs: g.l.map((log: any) => ({ date: log.d, value: log.v })), createdAt: Date.now()
   }));
 };
 
-/**
- * 編碼為 URL-Safe Base64
- */
 export const encodeDataForUrl = (goals: Goal[]): string => {
   try {
     const compressed = compressGoals(goals);
@@ -100,36 +77,22 @@ export const encodeDataForUrl = (goals: Goal[]): string => {
     const utf8Bytes = new TextEncoder().encode(json);
     let binary = '';
     utf8Bytes.forEach(b => binary += String.fromCharCode(b));
-    return btoa(binary)
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=/g, '');
+    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
   } catch (e) {
     console.error('Encode Error:', e);
     return "";
   }
 };
 
-/**
- * 從 URL-Safe Base64 解碼
- */
 export const decodeDataFromUrl = (base64: string): Goal[] | null => {
   try {
-    // 補回被移除的 '='
     let padding = '';
     const mod = base64.length % 4;
     if (mod > 0) padding = '='.repeat(4 - mod);
-    
-    const standardBase64 = base64
-      .replace(/-/g, '+')
-      .replace(/_/g, '/') + padding;
-      
+    const standardBase64 = base64.replace(/-/g, '+').replace(/_/g, '/') + padding;
     const binary = atob(standardBase64);
     const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-      bytes[i] = binary.charCodeAt(i);
-    }
-    
+    for (let i = 0; i < binary.length; i++) { bytes[i] = binary.charCodeAt(i); }
     const json = new TextDecoder().decode(bytes);
     const data = JSON.parse(json);
     return decompressGoals(data);

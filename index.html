@@ -13,40 +13,28 @@
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3649/3649463.png">
 
-    <!-- Open Graph / Facebook / LINE 分享標籤 -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Zenith 2026 年度策略規劃系統">
-    <meta property="og:description" content="最強大的年度目標管理工具，一鍵匯入目標模板，開啟你的 2026 高效人生。">
-    <meta property="og:image" content="https://cdn-icons-png.flaticon.com/512/3649/3649463.png">
-    
     <title>Zenith 2026 年度策略規劃系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f3f4f6; overflow: hidden; margin: 0; padding: 0; }
-        #root { height: 100vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; margin: 0; padding: 0; overflow: hidden; }
+        #root { height: 100vh; overflow: hidden; }
         .error-overlay { position: fixed; inset: 0; background: white; z-index: 9999; padding: 20px; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        
-        /* 捲軸美化 */
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        
-        /* 隱藏捲軸但保留功能 */
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* 針對 iOS 安全區域優化 */
-        @supports (padding-top: env(safe-area-inset-top)) {
-            header {
-                padding-top: env(safe-area-inset-top);
-                height: calc(3.5rem + env(safe-area-inset-top));
-            }
-        }
     </style>
-<script type="importmap">
+
+    <script>
+        // 防止 process.env 引發的白屏錯誤
+        window.process = { env: { API_KEY: "" } };
+        window.global = window;
+    </script>
+
+    <script type="importmap">
 {
   "imports": {
     "react": "https://esm.sh/react@19.0.0",
@@ -62,19 +50,28 @@
 </script>
 </head>
 <body>
-    <div id="root"></div>
+    <div id="root">
+        <div style="height: 100vh; display: flex; align-items: center; justify-content: center; color: #64748b; font-weight: bold; font-size: 14px;">
+            系統啟動中...
+        </div>
+    </div>
+    
     <div id="error-display" class="error-overlay">
         <h1 style="color: #ef4444; font-weight: 900; margin-bottom: 10px;">系統啟動失敗</h1>
-        <p id="error-message" style="color: #64748b; font-size: 14px; max-width: 300px;"></p>
-        <button onclick="localStorage.clear(); location.reload();" style="margin-top: 20px; background: #ef4444; color: white; padding: 10px 20px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer;">清除快取並重啟</button>
+        <p id="error-message" style="color: #64748b; font-size: 14px; max-width: 320px; font-family: monospace; word-break: break-all;"></p>
+        <button onclick="localStorage.clear(); location.reload();" style="margin-top: 20px; background: #0f172a; color: white; padding: 12px 24px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer;">清除快取並重啟</button>
     </div>
+
     <script>
-        window.onerror = function(msg, url, lineNo, columnNo, error) {
+        // 捕捉全域與非同步錯誤
+        const handleError = (msg) => {
             document.getElementById('error-display').style.display = 'flex';
             document.getElementById('error-message').textContent = msg;
-            return false;
         };
+        window.onerror = (msg) => handleError(msg);
+        window.onunhandledrejection = (e) => handleError(e.reason);
     </script>
+    
     <script type="module" src="./index.tsx"></script>
 </body>
 </html>
