@@ -81,10 +81,17 @@
         };
         window.onerror = (msg) => showError(msg);
         window.onunhandledrejection = (e) => showError(e.reason || 'Unhandled Promise Rejection');
-        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-        <script type="text/babel" data-type="module" src="./index.tsx"></script>
+     
     </script>
-  
+  <script 
+  src="https://unpkg.com/@babel/standalone/babel.min.js"
+  data-plugins="transform-modules-umd">
+</script>
+
+<script type="text/babel" data-presets="react,typescript">
+  // 直接在這裡寫 React 代碼測試，或者：
+  // 如果要引入外部，請確保伺服器支援 TSX 類型
+</script>
    
 </body>
 </html>
