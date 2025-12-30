@@ -81,9 +81,10 @@
         };
         window.onerror = (msg) => showError(msg);
         window.onunhandledrejection = (e) => showError(e.reason || 'Unhandled Promise Rejection');
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+        <script type="text/babel" data-type="module" src="./index.tsx"></script>
     </script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script type="text/babel" data-type="module" src="./index.tsx"></script>
+  
    
 </body>
 </html>
