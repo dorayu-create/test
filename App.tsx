@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Target, Plus, Share2, Zap, Flame, Compass, Edit3 } from 'lucide-react';
+import { Target, Plus, Share2, Flame, Edit3, ChevronRight, LayoutGrid, CalendarDays } from 'lucide-react';
 import { Goal, GoalCategory, YearStats, Vision } from './types.ts';
 import { STORAGE_KEYS } from './constants.tsx';
 import { getYearStats, getDaysInMonth, decodeDataFromUrl } from './utils.ts';
@@ -13,7 +13,7 @@ const TARGET_YEAR = 2026;
 
 const App: React.FC = () => {
   const [goals, setGoals] = useState<Goal[]>([]);
-  const [vision, setVision] = useState<Vision>({ motto: '2026: 追求卓越，不留遺憾', coreValues: ['自律', '創新', '共贏'] });
+  const [vision, setVision] = useState<Vision>({ motto: '成為更好的自己：2026 年度願景', coreValues: ['健康', '財富', '智慧'] });
   const [stats, setStats] = useState<YearStats>(() => getYearStats(TARGET_YEAR));
   const [selectedMonth, setSelectedMonth] = useState(() => new Date().getMonth());
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,8 +26,8 @@ const App: React.FC = () => {
   const visionKey = `zenith_vision_${TARGET_YEAR}`;
   const monthDays = useMemo(() => getDaysInMonth(TARGET_YEAR, selectedMonth), [selectedMonth]);
 
-  const gridTemplateMobile = `110px repeat(${monthDays.length}, 36px)`;
-  const gridTemplateDesktop = `60px 220px 100px 70px 70px 70px 160px repeat(${monthDays.length}, 36px)`;
+  const gridTemplateMobile = `120px repeat(${monthDays.length}, 34px)`;
+  const gridTemplateDesktop = `60px 240px 100px 70px 70px 70px 140px repeat(${monthDays.length}, 34px)`;
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -43,7 +43,6 @@ const App: React.FC = () => {
 
     const saved = localStorage.getItem(yearKey);
     const savedVision = localStorage.getItem(visionKey);
-    
     if (savedVision) setVision(JSON.parse(savedVision));
     
     let initialData: Goal[] = [];
@@ -56,13 +55,13 @@ const App: React.FC = () => {
     if (initialData.length === 0) {
       initialData = [
         {
-          id: '1', title: '每日深度學習 1 小時', category: GoalCategory.GROWTH, krNumber: 'KR1',
-          target: 300, actual: 0, unit: '次', description: '閱讀與專業技能提升',
+          id: '1', title: '每日晨間冥想', category: GoalCategory.HEALTH, krNumber: 'KR1',
+          target: 365, actual: 0, unit: '次', description: '保持心靈平靜與專注',
           logs: [], createdAt: Date.now()
         },
         {
-          id: '2', title: '全年度 5KM 慢跑', category: GoalCategory.HEALTH, krNumber: 'KR2',
-          target: 150, actual: 0, unit: '次', description: '建立強健體格',
+          id: '2', title: '閱讀專業書籍 24 本', category: GoalCategory.GROWTH, krNumber: 'KR2',
+          target: 24, actual: 0, unit: '本', description: '每個月完成兩本書',
           logs: [], createdAt: Date.now()
         }
       ];
@@ -81,14 +80,6 @@ const App: React.FC = () => {
     setShowVisionEdit(false);
   };
 
-  const handleImportToMine = () => {
-    if (window.confirm('確定要將此模板匯入為您的正式計畫嗎？這將覆蓋您目前的資料。')) {
-      localStorage.setItem(yearKey, JSON.stringify(goals));
-      setIsViewMode(false);
-      window.history.replaceState(null, "", window.location.pathname);
-    }
-  };
-
   const handleLog = (goalId: string, date: string) => {
     if (isViewMode) return;
     const updated = goals.map(g => {
@@ -96,7 +87,6 @@ const App: React.FC = () => {
       const existingIdx = g.logs.findIndex(l => l.date === date);
       let newLogs = [...g.logs];
       let newActual = g.actual;
-
       if (existingIdx > -1) {
         newLogs.splice(existingIdx, 1);
         newActual -= 1;
@@ -117,9 +107,7 @@ const App: React.FC = () => {
       const newGoal: Goal = {
         ...data,
         id: Math.random().toString(36).substr(2, 9),
-        actual: 0,
-        logs: [],
-        createdAt: Date.now()
+        actual: 0, logs: [], createdAt: Date.now()
       } as Goal;
       saveGoals([newGoal, ...goals]);
     }
@@ -128,158 +116,172 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col font-sans select-none bg-slate-50 text-slate-900 overflow-hidden">
+    <div className="h-screen flex flex-col bg-[#fdfcfb] text-[#1a1a1a] select-none overflow-hidden">
+      {/* 預覽模式提醒 */}
       {isViewMode && (
-        <div className="bg-indigo-600 text-white px-4 py-2 flex items-center justify-between text-[11px] font-black uppercase tracking-widest z-[60] shadow-xl">
-          <div className="flex items-center space-x-2">
-            <Zap className="w-3 h-3 fill-current text-yellow-300 animate-pulse" />
-            <span>模板預覽模式</span>
-          </div>
-          <button onClick={handleImportToMine} className="bg-white text-indigo-600 px-4 py-1 rounded-full font-black shadow-lg hover:bg-indigo-50 active:scale-95 transition-all">
-            立即匯入
+        <div className="bg-[#1a1a1a] text-white px-4 py-2 flex items-center justify-between text-[10px] font-bold tracking-widest z-[60]">
+          <span className="flex items-center space-x-2">
+            <Flame className="w-3 h-3 text-orange-500 fill-current" />
+            <span>年度計畫模板預覽中</span>
+          </span>
+          <button 
+            onClick={() => { localStorage.setItem(yearKey, JSON.stringify(goals)); setIsViewMode(false); window.location.hash = ''; }}
+            className="bg-white text-black px-3 py-1 rounded uppercase hover:bg-gray-100 transition-colors"
+          >
+            匯入為我的 2026
           </button>
         </div>
       )}
 
-      <header className="bg-slate-900 text-white px-6 h-16 flex items-center justify-between z-50 shrink-0">
+      {/* 導覽列：極簡白 */}
+      <nav className="h-16 px-6 border-b border-gray-100 flex items-center justify-between bg-white/80 backdrop-blur-md z-50">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/20">
+          <div className="w-9 h-9 border-2 border-black flex items-center justify-center rounded-lg">
             <Target className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-sm font-black tracking-tighter uppercase leading-none">Zenith 2026</h1>
-            <p className="text-[9px] text-slate-400 font-bold tracking-[0.2em] mt-1 uppercase">Strategic Planning System</p>
+            <h1 className="text-base font-black tracking-tight uppercase leading-none">Zenith 2026</h1>
+            <p className="text-[9px] font-bold text-gray-400 mt-1 uppercase tracking-widest">Core Strategy System</p>
           </div>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-4">
+          <button onClick={() => setIsShareModalOpen(true)} className="p-2 hover:bg-gray-50 rounded-full transition-colors">
+            <Share2 className="w-5 h-5" />
+          </button>
           {!isViewMode && (
-            <button onClick={() => setIsShareModalOpen(true)} className="p-2 hover:bg-slate-800 rounded-xl text-slate-400 hover:text-white transition-colors">
-              <Share2 className="w-5 h-5" />
-            </button>
-          )}
-          {!isViewMode && (
-            <button onClick={() => { setEditingGoal(null); setIsModalOpen(true); }} className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-black flex items-center space-x-2 active:scale-95 shadow-lg shadow-indigo-600/30 transition-all">
+            <button 
+              onClick={() => { setEditingGoal(null); setIsModalOpen(true); }}
+              className="bg-[#1a1a1a] text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 active:scale-95 transition-transform"
+            >
               <Plus className="w-4 h-4" />
-              <span>新增指標</span>
+              <span>新增目標</span>
             </button>
           )}
         </div>
-      </header>
+      </nav>
 
-      <main className="flex-1 overflow-y-auto custom-scrollbar bg-slate-50 pb-20">
-        <div className="p-4 sm:p-8 max-w-[1800px] mx-auto space-y-8">
+      {/* 主要內容區 */}
+      <main className="flex-1 overflow-y-auto no-scrollbar">
+        <div className="max-w-[1800px] mx-auto p-4 md:p-8 space-y-8">
           
-          {/* 年度願景區塊 */}
-          <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-100 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-8 opacity-5">
-               <Compass className="w-40 h-40" />
+          {/* 年度北極星區塊：模擬紙質筆記本封面 */}
+          <div className="bg-white border border-gray-100 rounded-[40px] p-8 md:p-12 shadow-sm relative overflow-hidden group">
+            <div className="absolute -top-10 -right-10 opacity-[0.03] group-hover:rotate-12 transition-transform duration-1000">
+               <CalendarDays className="w-80 h-80" />
             </div>
-            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="flex-1">
-                <div className="flex items-center space-x-3 mb-2">
-                  <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest px-2 py-0.5 bg-indigo-50 rounded">Annual Vision</span>
+            
+            <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-8">
+              <div className="flex-1 space-y-4">
+                <div className="flex items-center space-x-3">
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 bg-blue-50 px-3 py-1 rounded-full">Annual North Star</span>
                   {!isViewMode && (
-                    <button onClick={() => setShowVisionEdit(!showVisionEdit)} className="p-1 hover:bg-slate-100 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Edit3 className="w-3 h-3 text-slate-400" />
+                    <button onClick={() => setShowVisionEdit(!showVisionEdit)} className="opacity-0 group-hover:opacity-100 transition-opacity p-1">
+                      <Edit3 className="w-3.5 h-3.5 text-gray-300 hover:text-black" />
                     </button>
                   )}
                 </div>
+                
                 {showVisionEdit ? (
-                  <div className="space-y-4 max-w-lg">
+                  <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
                     <input 
-                      className="w-full text-2xl font-black bg-slate-50 border-b-2 border-indigo-500 p-2 outline-none" 
+                      className="w-full text-3xl font-black border-b-2 border-black focus:outline-none bg-transparent py-2"
                       value={vision.motto} onChange={e => setVision({...vision, motto: e.target.value})}
                     />
-                    <div className="flex gap-2">
-                       {vision.coreValues.map((v, i) => (
-                         <input key={i} className="bg-slate-50 border rounded px-2 py-1 text-xs font-bold" value={v} onChange={e => {
-                           const newV = [...vision.coreValues];
-                           newV[i] = e.target.value;
-                           setVision({...vision, coreValues: newV});
-                         }} />
-                       ))}
-                       <button onClick={saveVision} className="bg-indigo-600 text-white px-3 py-1 rounded-lg text-xs font-bold">儲存</button>
+                    <div className="flex items-center space-x-4">
+                       <div className="flex-1 flex gap-2">
+                         {vision.coreValues.map((v, i) => (
+                           <input key={i} className="flex-1 text-xs font-bold bg-gray-50 p-2 rounded border" value={v} onChange={e => {
+                             const nv = [...vision.coreValues]; nv[i] = e.target.value; setVision({...vision, coreValues: nv});
+                           }} />
+                         ))}
+                       </div>
+                       <button onClick={saveVision} className="bg-black text-white px-6 py-2 rounded-lg text-xs font-black">儲存願景</button>
                     </div>
                   </div>
                 ) : (
                   <>
-                    <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight">{vision.motto}</h2>
-                    <div className="flex flex-wrap gap-2 mt-4">
+                    <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight">{vision.motto}</h2>
+                    <div className="flex flex-wrap gap-4 pt-4">
                       {vision.coreValues.map((v, i) => (
-                        <div key={i} className="flex items-center space-x-1 px-3 py-1 bg-slate-100 rounded-full">
-                          <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full" />
-                          <span className="text-xs font-black text-slate-600 uppercase tracking-tighter">{v}</span>
+                        <div key={i} className="flex items-center space-x-2">
+                          <ChevronRight className="w-4 h-4 text-blue-600" />
+                          <span className="text-sm font-black uppercase tracking-widest text-gray-500">{v}</span>
                         </div>
                       ))}
                     </div>
                   </>
                 )}
               </div>
-              <div className="bg-slate-900 rounded-2xl p-5 text-white min-w-[240px] shadow-2xl">
-                 <div className="flex justify-between items-center mb-4">
-                   <span className="text-[9px] font-black uppercase text-slate-400">Streak Champion</span>
-                   <Flame className="w-4 h-4 text-orange-500 fill-current" />
-                 </div>
-                 <div className="text-3xl font-black mb-1">Stay Focused.</div>
-                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">
-                   建立連勝，<br/>是建立自律的最短路徑。
-                 </div>
+              
+              <div className="shrink-0">
+                <Dashboard stats={stats} />
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-            <div className="xl:col-span-1"><Dashboard stats={stats} /></div>
-            <div className="xl:col-span-3"><AICoachPanel goals={goals} stats={stats} /></div>
-          </div>
+          {/* AI 助手與指標追蹤 */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+             <div className="lg:col-span-4">
+                <AICoachPanel goals={goals} stats={stats} />
+             </div>
+             
+             <div className="lg:col-span-4 bg-white border border-gray-100 rounded-[32px] shadow-sm overflow-hidden">
+                <div className="p-6 border-b border-gray-50 flex items-center justify-between bg-gray-50/30">
+                   <div className="flex items-center space-x-3">
+                      <LayoutGrid className="w-5 h-5 text-gray-400" />
+                      <h3 className="text-sm font-black uppercase tracking-widest">習慣矩陣追蹤</h3>
+                   </div>
+                   <div className="flex bg-white p-1 rounded-xl border border-gray-200">
+                      {[...Array(12)].map((_, i) => (
+                        <button 
+                          key={i} onClick={() => setSelectedMonth(i)}
+                          className={`px-3 py-1.5 text-[10px] font-black rounded-lg transition-all ${selectedMonth === i ? 'bg-black text-white' : 'text-gray-400 hover:text-black hover:bg-gray-100'}`}
+                        >
+                          {i + 1}M
+                        </button>
+                      ))}
+                   </div>
+                </div>
 
-          <div className="bg-white rounded-[32px] shadow-2xl border border-slate-100 overflow-hidden">
-            <div className="overflow-x-auto no-scrollbar touch-pan-x bg-white">
-              <div className="min-w-max">
-                <div 
-                  className="grid bg-slate-900 text-white text-[10px] font-black uppercase sticky top-0 z-30 shadow-md"
-                  style={{ gridTemplateColumns: window.innerWidth < 768 ? gridTemplateMobile : gridTemplateDesktop }}
-                >
-                  <div className="hidden md:flex p-4 border-r border-slate-800 items-center justify-center">KR</div>
-                  <div className="p-4 border-r border-slate-800 flex items-center sticky left-0 bg-slate-900 z-40">
-                    <span className="text-indigo-400 mr-2">/</span>項目追蹤
-                  </div>
-                  <div className="hidden md:flex p-4 border-r border-slate-800 items-center justify-center">目標</div>
-                  <div className="hidden md:flex p-4 border-r border-slate-800 items-center justify-center">累積</div>
-                  <div className="hidden md:flex p-4 border-r border-slate-800 items-center justify-center">剩餘</div>
-                  <div className="hidden md:flex p-4 border-r border-slate-800 items-center justify-center text-emerald-400">效率</div>
-                  <div className="hidden md:flex p-4 border-r border-slate-800 items-center justify-center">進度</div>
-                  {monthDays.map(d => (
-                    <div key={d.iso} className={`w-9 border-r border-slate-800 flex flex-col items-center justify-center py-2 ${d.isWeekend ? 'bg-slate-800/50' : ''}`}>
-                      <span className="opacity-40 text-[8px] font-bold mb-0.5">{d.weekDay}</span>
-                      <span className="text-[11px] font-black">{d.day}</span>
-                    </div>
-                  ))}
+                <div className="overflow-x-auto no-scrollbar touch-pan-x">
+                   <div className="min-w-max">
+                      {/* 表頭 */}
+                      <div 
+                        className="grid border-b border-gray-100 bg-white sticky top-0 z-20"
+                        style={{ gridTemplateColumns: window.innerWidth < 768 ? gridTemplateMobile : gridTemplateDesktop }}
+                      >
+                         <div className="hidden md:flex p-4 text-[9px] font-black text-gray-300 items-center justify-center uppercase tracking-tighter">ID</div>
+                         <div className="p-4 flex items-center sticky left-0 bg-white z-30 font-black text-[10px] uppercase tracking-widest text-gray-400">指標項目</div>
+                         <div className="hidden md:flex p-4 text-[9px] font-black text-gray-300 items-center justify-center uppercase">Target</div>
+                         <div className="hidden md:flex p-4 text-[9px] font-black text-gray-300 items-center justify-center uppercase">Actual</div>
+                         <div className="hidden md:flex p-4 text-[9px] font-black text-gray-300 items-center justify-center uppercase">Remain</div>
+                         <div className="hidden md:flex p-4 text-[9px] font-black text-gray-300 items-center justify-center uppercase">Efficiency</div>
+                         <div className="hidden md:flex p-4 text-[9px] font-black text-gray-300 items-center justify-center uppercase">Progress</div>
+                         {monthDays.map(d => (
+                           <div key={d.iso} className={`w-[34px] flex flex-col items-center justify-center py-2 border-l border-gray-50 ${d.isWeekend ? 'bg-gray-50/50' : ''}`}>
+                              <span className="text-[7px] font-black text-gray-300 uppercase">{d.weekDay}</span>
+                              <span className="text-[10px] font-black text-gray-900">{d.day}</span>
+                           </div>
+                         ))}
+                      </div>
+
+                      {/* 內容列 */}
+                      <div className="divide-y divide-gray-50">
+                        {goals.map(goal => (
+                          <GoalRow 
+                            key={goal.id} goal={goal} todayISO={stats.todayISO} yearProgress={stats.yearProgress} monthDays={monthDays} onLog={handleLog}
+                            onEdit={(g) => { if(!isViewMode) { setEditingGoal(g); setIsModalOpen(true); } }}
+                            isViewMode={isViewMode} gridTemplateMobile={gridTemplateMobile} gridTemplateDesktop={gridTemplateDesktop}
+                          />
+                        ))}
+                      </div>
+                   </div>
                 </div>
-                <div className="divide-y divide-slate-100">
-                  {goals.map(goal => (
-                    <GoalRow 
-                      key={goal.id} goal={goal} todayISO={stats.todayISO} yearProgress={stats.yearProgress} monthDays={monthDays} onLog={handleLog}
-                      onEdit={(g) => { if(!isViewMode) { setEditingGoal(g); setIsModalOpen(true); } }}
-                      isViewMode={isViewMode} gridTemplateMobile={gridTemplateMobile} gridTemplateDesktop={gridTemplateDesktop}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
+             </div>
           </div>
         </div>
       </main>
 
-      <footer className="bg-white/80 backdrop-blur-md border-t border-slate-200 shrink-0 p-4 shadow-2xl z-50">
-        <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar max-w-[1200px] mx-auto justify-start sm:justify-center">
-           {[...Array(12)].map((_, i) => (
-             <button key={i} onClick={() => setSelectedMonth(i)} className={`px-5 py-2.5 text-[11px] font-black rounded-2xl transition-all whitespace-nowrap shrink-0 ${selectedMonth === i ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-200' : 'text-slate-500 hover:bg-slate-100'}`}>
-               {i + 1}月
-             </button>
-           ))}
-        </div>
-      </footer>
       <GoalModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={handleSaveGoal} editingGoal={editingGoal} />
       <ShareModal isOpen={isShareModalOpen} onClose={() => setIsShareModalOpen(false)} currentGoals={goals} />
     </div>

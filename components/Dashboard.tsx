@@ -1,7 +1,5 @@
-
 import React from 'react';
 import { YearStats } from '../types.ts';
-import { formatPercent } from '../utils.ts';
 
 interface DashboardProps {
   stats: YearStats;
@@ -9,33 +7,34 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ stats }) => {
   const items = [
-    { label: '年底日', value: '12/31', sub: stats.year },
-    { label: '更新日', value: stats.today, sub: 'Today' },
-    { label: '已過天數', value: stats.daysElapsed, sub: 'Days' },
-    { label: '還剩幾天', value: stats.daysRemaining, sub: 'Remaining' },
+    { label: 'Year', value: stats.year },
+    { label: 'Remain', value: stats.daysRemaining },
+    { label: 'Elapsed', value: stats.daysElapsed },
   ];
 
   return (
-    <div className="bg-[#1e3a8a] text-white rounded-t-xl overflow-hidden shadow-xl">
-      <div className="grid grid-cols-2 md:grid-cols-4 border-b border-blue-800">
+    <div className="flex flex-col items-end gap-3">
+      <div className="flex items-center space-x-6">
         {items.map((item, idx) => (
-          <div key={idx} className="border-r border-blue-800 p-3 md:p-4 text-center">
-            <p className="text-[9px] md:text-[10px] uppercase tracking-widest text-blue-300 font-bold mb-1">{item.label}</p>
-            <p className="text-lg md:text-xl font-black">{item.value}</p>
+          <div key={idx} className="text-right">
+            <p className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-300 mb-1">{item.label}</p>
+            <p className="text-xl font-black tabular-nums">{item.value}</p>
           </div>
         ))}
       </div>
-      <div className="p-4 md:p-6 bg-blue-900 bg-opacity-40">
+      
+      <div className="bg-black text-white p-4 rounded-2xl w-full md:w-64 shadow-2xl shadow-blue-900/10">
         <div className="flex justify-between items-center mb-3">
-          <span className="text-xs md:text-sm font-bold text-blue-200">今年已過比例</span>
-          <span className="text-2xl md:text-3xl font-black text-white">{formatPercent(stats.yearProgress)}</span>
+           <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Time Progress</span>
+           <span className="text-xl font-black tabular-nums">{stats.yearProgress.toFixed(1)}%</span>
         </div>
-        <div className="w-full bg-blue-950 rounded-full h-3 md:h-4 overflow-hidden border border-blue-800">
-          <div 
-            className="h-full bg-gradient-to-r from-blue-400 to-indigo-400 shadow-[0_0_15px_rgba(96,165,250,0.5)] transition-all duration-1000"
+        <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+           <div 
+            className="h-full bg-white transition-all duration-1000 shadow-[0_0_10px_rgba(255,255,255,0.5)]"
             style={{ width: `${stats.yearProgress}%` }}
-          />
+           />
         </div>
+        <p className="text-[8px] font-bold text-gray-500 mt-2 uppercase text-center tracking-tighter italic">"Tomorrow is a gift, today is a strategy."</p>
       </div>
     </div>
   );

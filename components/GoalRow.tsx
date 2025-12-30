@@ -7,7 +7,7 @@ interface GoalRowProps {
   goal: Goal;
   todayISO: string;
   yearProgress: number;
-  monthDays: { iso: string, day: number, isWeekend: boolean }[];
+  monthDays: { iso: string, day: number, isWeekend: boolean, weekDay: string }[];
   onLog: (goalId: string, date: string) => void;
   onEdit: (goal: Goal) => void;
   isViewMode?: boolean;
@@ -24,59 +24,67 @@ const GoalRow: React.FC<GoalRowProps> = ({
   const efficiency = getEfficiencyStatus(achievementRate, yearProgress);
   const streak = useMemo(() => calculateStreak(goal.logs, todayISO), [goal.logs, todayISO]);
   
-  const getBarColor = () => achievementRate >= 100 ? 'bg-red-500' : achievementRate >= 50 ? 'bg-indigo-600' : 'bg-slate-400';
   const isMobile = window.innerWidth < 768;
 
   return (
     <div 
-      className="grid items-stretch border-b border-slate-50 group bg-white hover:bg-slate-50/80 transition-all"
+      className="grid items-stretch group hover:bg-gray-50/50 transition-colors"
       style={{ gridTemplateColumns: isMobile ? gridTemplateMobile : gridTemplateDesktop }}
     >
-      <div className="hidden md:flex p-4 text-[11px] font-black text-slate-300 border-r border-slate-50 items-center justify-center font-mono">
+      <div className="hidden md:flex p-4 text-[10px] font-black text-gray-200 border-r border-gray-50 items-center justify-center font-mono">
         {goal.krNumber || 'KR'}
       </div>
+      
       <div 
-        className={`p-4 border-r border-slate-100 flex items-center justify-between sticky left-0 z-20 bg-white group-hover:bg-indigo-50/40 shadow-[4px_0_15px_rgba(0,0,0,0.03)] transition-colors ${isViewMode ? 'cursor-default' : 'cursor-pointer'}`} 
+        className={`p-4 border-r border-gray-50 flex items-center justify-between sticky left-0 z-10 bg-white group-hover:bg-gray-50/80 transition-colors ${isViewMode ? '' : 'cursor-pointer'}`}
         onClick={() => !isViewMode && onEdit(goal)}
       >
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center space-x-1.5 mb-1">
-            <p className={`text-xs font-black truncate leading-tight ${!isViewMode ? 'text-slate-900 group-hover:text-indigo-600' : 'text-slate-700'}`}>{goal.title}</p>
-            {streak.current > 0 && (
-              <div className="flex items-center text-[10px] text-orange-500 font-black animate-bounce-slow">
-                <Flame className="w-3 h-3 fill-current mr-0.5" />
-                {streak.current}
-              </div>
-            )}
-          </div>
-          <p className="text-[8px] text-slate-400 font-bold uppercase truncate tracking-widest">{goal.category}</p>
+        <div className="min-w-0">
+           <div className="flex items-center space-x-2 mb-1">
+             <h4 className="text-[12px] font-black text-gray-800 truncate">{goal.title}</h4>
+             {streak.current > 2 && (
+               <div className="flex items-center text-[9px] font-black text-orange-500 bg-orange-50 px-1.5 py-0.5 rounded animate-pulse">
+                  <Flame className="w-2.5 h-2.5 fill-current mr-0.5" />
+                  {streak.current}
+               </div>
+             )}
+           </div>
+           <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest truncate">{goal.category}</p>
         </div>
       </div>
-      <div className="hidden md:flex p-4 text-center border-r border-slate-50 text-[11px] font-bold text-slate-400 items-center justify-center font-mono">{goal.target}</div>
-      <div className="hidden md:flex p-4 text-center border-r border-slate-50 text-[12px] font-black text-indigo-700 bg-indigo-50/20 items-center justify-center font-mono">{goal.actual}</div>
-      <div className="hidden md:flex p-4 text-center border-r border-slate-50 text-[11px] font-bold text-slate-400 items-center justify-center font-mono">{remaining}</div>
-      <div className={`hidden md:flex p-4 text-center border-r border-slate-50 text-[11px] font-black items-center justify-center font-mono ${achievementRate >= 100 ? 'text-red-600' : 'text-slate-700'}`}>
-        {Math.round(achievementRate)}%
+
+      <div className="hidden md:flex p-4 text-center border-r border-gray-50 text-[10px] font-bold text-gray-400 items-center justify-center font-mono">{goal.target}</div>
+      <div className="hidden md:flex p-4 text-center border-r border-gray-50 text-[11px] font-black text-blue-600 items-center justify-center font-mono">{goal.actual}</div>
+      <div className="hidden md:flex p-4 text-center border-r border-gray-50 text-[10px] font-bold text-gray-300 items-center justify-center font-mono">{remaining}</div>
+      <div className="hidden md:flex p-4 text-center border-r border-gray-50 items-center justify-center">
+         <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${efficiency.bg} ${efficiency.color}`}>
+           {efficiency.icon} {efficiency.label}
+         </span>
       </div>
-      <div className="hidden md:flex p-4 border-r border-slate-50 items-center space-x-2">
-        <div className="flex-grow bg-slate-100 h-2.5 rounded-full overflow-hidden">
-          <div className={`h-full ${getBarColor()} transition-all duration-1000`} style={{ width: `${Math.min(100, achievementRate)}%` }} />
-        </div>
-        <span title={efficiency.label} className="text-xs cursor-help">{efficiency.icon}</span>
+      <div className="hidden md:flex p-4 border-r border-gray-50 items-center">
+         <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+            <div 
+              className={`h-full transition-all duration-1000 ${achievementRate >= 100 ? 'bg-red-500' : 'bg-black'}`}
+              style={{ width: `${Math.min(100, achievementRate)}%` }}
+            />
+         </div>
       </div>
+
       {monthDays.map(d => {
         const isLogged = goal.logs.some(l => l.date === d.iso);
         const isToday = d.iso === todayISO;
         return (
           <button
             key={d.iso} disabled={isViewMode} onClick={() => onLog(goal.id, d.iso)}
-            className={`w-9 min-h-[60px] border-r border-slate-50 flex items-center justify-center transition-all ${d.isWeekend ? 'bg-slate-50/50' : ''} ${isToday ? 'relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-indigo-500' : ''} ${isViewMode ? 'cursor-default' : 'hover:bg-indigo-50 active:scale-90'}`}
+            className={`w-[34px] min-h-[50px] border-r border-gray-50 flex items-center justify-center transition-all ${d.isWeekend ? 'bg-gray-50/30' : ''} ${isToday ? 'relative after:absolute after:inset-x-0 after:bottom-0 after:h-1 after:bg-blue-600' : ''} ${isViewMode ? '' : 'hover:bg-blue-50/50'}`}
           >
             {isLogged ? (
-              <div className={`w-6 h-6 rounded-lg flex items-center justify-center shadow-md ${isViewMode ? 'bg-slate-400' : 'bg-indigo-600'}`}>
-                <Check className="w-4 h-4 text-white stroke-[4]" />
+              <div className="w-5 h-5 bg-black rounded shadow-sm flex items-center justify-center scale-110 animate-in zoom-in-75">
+                <Check className="w-3 h-3 text-white stroke-[4]" />
               </div>
-            ) : <div className={`w-5 h-5 border-2 rounded-lg transition-colors ${d.isWeekend ? 'border-slate-200 bg-white/50' : 'border-slate-100 bg-white'} group-hover:border-slate-200`} />}
+            ) : (
+              <div className={`w-4 h-4 border-2 rounded-sm transition-colors ${d.isWeekend ? 'border-gray-100 bg-white/50' : 'border-gray-50 bg-white'} group-hover:border-gray-200`} />
+            )}
           </button>
         );
       })}

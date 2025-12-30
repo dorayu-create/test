@@ -3,56 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Zenith 2026 | 經典年度目標管理</title>
     
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Zenith2026">
-    <meta name="mobile-web-app-capable" content="yes">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3649/3649463.png">
-
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Zenith 2026 年度策略規劃系統">
-    <meta property="og:description" content="最強大的年度目標管理工具，開啟你的 2026 高效人生。">
-    <meta property="og:image" content="https://cdn-icons-png.flaticon.com/512/3649/3649463.png">
-    
-    <title>Zenith 2026 年度策略規劃系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
+        :root {
+            --paper-bg: #fdfcfb;
+            --ink-black: #1a1a1a;
+            --accent-blue: #2563eb;
+        }
         body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #f8fafc; 
-            margin: 0; 
-            padding: 0; 
-            overflow: hidden; 
+            font-family: 'Plus Jakarta Sans', 'Noto Sans TC', sans-serif;
+            background-color: var(--paper-bg);
+            color: var(--ink-black);
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
             -webkit-font-smoothing: antialiased;
         }
         #root { height: 100vh; overflow: hidden; }
         .error-overlay { 
-            position: fixed; 
-            inset: 0; 
-            background: white; 
-            z-index: 9999; 
-            display: none; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            text-align: center; 
+            position: fixed; inset: 0; background: white; z-index: 9999;
+            display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;
         }
         ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .loader-spin { animation: spin 1s linear infinite; }
+        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
     </style>
 
     <script>
-        // CRITICAL: Prevent process is not defined error for Gemini SDK
+        // 防止 @google/genai 因缺少 process 變數而崩潰
         window.process = { env: { API_KEY: "" } };
         window.global = window;
     </script>
@@ -74,31 +57,31 @@
 </head>
 <body>
     <div id="root">
-        <div style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #64748b; background: #f8fafc;">
-            <div style="width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top: 4px solid #3b82f6; border-radius: 50%;" class="loader-spin"></div>
-            <div style="margin-top: 16px; font-weight: 800; font-size: 14px; letter-spacing: 0.05em;">SYSTEM INITIALIZING...</div>
+        <div style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fdfcfb;">
+            <div style="width: 24px; height: 24px; border: 2px solid #e2e8f0; border-top: 2px solid #1a1a1a; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+            <div style="margin-top: 16px; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #64748b;">LOADING ZENITH...</div>
         </div>
     </div>
     
+    <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+
     <div id="error-display" class="error-overlay">
-        <h1 style="color: #ef4444; font-weight: 900; margin-bottom: 10px;">系統啟動失敗</h1>
-        <p id="error-message" style="color: #64748b; font-size: 12px; max-width: 320px; font-family: monospace;"></p>
-        <button onclick="localStorage.clear(); location.reload();" style="margin-top: 24px; background: #0f172a; color: white; padding: 14px 28px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer;">清除快取並重啟</button>
+        <h1 style="color: #ef4444; font-weight: 900; margin-bottom: 8px;">載入失敗</h1>
+        <p id="error-message" style="color: #64748b; font-size: 12px; font-family: monospace;"></p>
+        <button onclick="localStorage.clear(); location.reload();" style="margin-top: 24px; background: #1a1a1a; color: white; padding: 12px 24px; border-radius: 8px; font-weight: 700;">重置系統</button>
     </div>
 
     <script>
-        const handleError = (msg) => {
-            const display = document.getElementById('error-display');
-            const message = document.getElementById('error-message');
-            if (display && message) {
-                display.style.display = 'flex';
-                message.textContent = msg;
-            }
+        window.onerror = (msg) => {
+            document.getElementById('error-display').style.display = 'flex';
+            document.getElementById('error-message').textContent = msg;
         };
-        window.onerror = (msg) => handleError(msg);
-        window.onunhandledrejection = (e) => handleError(e.reason || e);
+        window.onunhandledrejection = (e) => {
+            document.getElementById('error-display').style.display = 'flex';
+            document.getElementById('error-message').textContent = e.reason;
+        };
     </script>
     
-    <script type="module" src="./index.tsx"></script>
+    <script type="module" src="index.tsx"></script>
 </body>
 </html>
