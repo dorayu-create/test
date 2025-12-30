@@ -107,34 +107,6 @@ const App: React.FC = () => {
     saveGoals(updated);
   };
 
-  const handleExport = () => {
-    const data = JSON.stringify(goals, null, 2);
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Zenith_2026_Backup.json`;
-    a.click();
-  };
-
-  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const imported = JSON.parse(event.target?.result as string);
-        if (Array.isArray(imported)) {
-          saveGoals(imported);
-          alert('匯入成功');
-        }
-      } catch (err) {
-        alert('格式錯誤');
-      }
-    };
-    reader.readAsText(file);
-  };
-
   const handleSaveGoal = (data: Partial<Goal>) => {
     if (isViewMode) return;
     if (editingGoal) {
@@ -160,68 +132,68 @@ const App: React.FC = () => {
         <div className="bg-blue-600 text-white px-4 py-2 flex items-center justify-between text-[10px] sm:text-[11px] font-black uppercase tracking-wider z-[60] shadow-lg shrink-0">
           <div className="flex items-center space-x-2">
             <Zap className="w-3 h-3 fill-current text-yellow-300" />
-            <span className="truncate max-w-[150px] sm:max-w-none">預覽他人分享模板</span>
+            <span className="truncate max-w-[120px] sm:max-w-none">預覽模式</span>
           </div>
           <div className="flex items-center space-x-2">
             <button onClick={handleExitPreview} className="hover:underline opacity-70 text-[9px]">返回</button>
             <button onClick={handleImportToMine} className="bg-white text-blue-600 px-3 py-1 rounded-full shadow-md flex items-center space-x-1 hover:bg-blue-50 transition-colors text-[9px] font-black">
               <Save className="w-2.5 h-2.5" />
-              <span>一鍵匯入</span>
+              <span>匯入</span>
             </button>
           </div>
         </div>
       )}
 
-      <header className="bg-[#0f172a] text-white px-4 sm:px-6 h-14 flex items-center justify-between sticky top-0 z-50 shrink-0 shadow-2xl">
-        <div className="flex items-center space-x-3">
-          <div className="bg-blue-600 p-1.5 rounded-lg shadow-inner"><Target className="text-white w-4 h-4 sm:w-5 sm:h-5" /></div>
-          <div>
-            <h1 className="text-xs sm:text-sm font-black tracking-tighter uppercase">Zenith 2026</h1>
+      <header className="bg-[#0f172a] text-white px-3 sm:px-6 h-14 flex items-center justify-between sticky top-0 z-50 shrink-0 shadow-2xl">
+        <div className="flex items-center space-x-2 sm:space-x-3 overflow-hidden">
+          <div className="bg-blue-600 p-1.5 rounded-lg shadow-inner shrink-0"><Target className="text-white w-4 h-4 sm:w-5 sm:h-5" /></div>
+          <div className="min-w-0">
+            <h1 className="text-[11px] sm:text-sm font-black tracking-tighter uppercase truncate">Zenith 2026</h1>
             {!isViewMode && (
               <div className="flex items-center space-x-1 text-[8px] sm:text-[9px] font-bold">
-                <span className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full ${saveStatus === 'saved' ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'}`}></span>
-                <span className="text-slate-400 uppercase tracking-widest">{saveStatus === 'saved' ? 'Synced' : 'Syncing'}</span>
+                <span className={`w-1 h-1 rounded-full ${saveStatus === 'saved' ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'}`}></span>
+                <span className="text-slate-400 uppercase tracking-widest truncate">{saveStatus === 'saved' ? 'Synced' : 'Syncing'}</span>
               </div>
             )}
           </div>
         </div>
         
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
           {!isViewMode && (
             <button 
               onClick={() => setIsShareModalOpen(true)} 
-              className="flex items-center space-x-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-black shadow-lg transition-all active:scale-95"
+              className="flex items-center space-x-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-black shadow-lg active:scale-95"
             >
-              <Share2 className="w-3.5 h-3.5" />
+              <Share2 className="w-3 h-3" />
               <span className="hidden xs:inline">分享</span>
             </button>
           )}
           {!isViewMode && (
-            <button onClick={() => { setEditingGoal(null); setIsModalOpen(true); }} className="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-lg text-[10px] font-black flex items-center space-x-1.5 transition-all">
-              <Plus className="w-3.5 h-3.5" />
+            <button onClick={() => { setEditingGoal(null); setIsModalOpen(true); }} className="bg-slate-700 hover:bg-slate-600 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-black flex items-center space-x-1 transition-all">
+              <Plus className="w-3 h-3" />
               <span className="hidden xs:inline">新增</span>
             </button>
           )}
         </div>
       </header>
 
-      <main className="flex-grow overflow-y-auto px-3 py-4 sm:px-6 sm:py-6 custom-scrollbar">
+      <main className="flex-grow overflow-y-auto px-3 py-4 sm:px-6 sm:py-6 custom-scrollbar pb-24">
         <div className="max-w-[1600px] mx-auto space-y-4 sm:space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             <div className="lg:col-span-1">
               <Dashboard stats={stats} />
               <div className="mt-3 bg-white rounded-xl p-3 sm:p-4 border border-gray-200 shadow-sm flex items-center justify-between">
-                <div>
+                <div className="min-w-0">
                   <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Today</p>
-                  <p className="text-xs sm:text-sm font-black text-gray-800">{stats.todayISO}</p>
+                  <p className="text-xs font-black text-gray-800 truncate">{stats.todayISO}</p>
                 </div>
-                <div className="flex -space-x-1.5">
+                <div className="flex -space-x-2 shrink-0">
                    {goals.slice(0, 4).map(g => (
                      <button 
                         key={g.id} 
                         onClick={() => handleLog(g.id, stats.todayISO)} 
                         disabled={isViewMode}
-                        className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 border-white flex items-center justify-center text-[9px] sm:text-[10px] font-black shadow-sm transition-all ${!isViewMode ? 'active:scale-90' : ''} ${g.logs.some(l => l.date === stats.todayISO) ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-400'}`}>
+                        className={`w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-[9px] font-black shadow-sm transition-all ${!isViewMode ? 'active:scale-90' : ''} ${g.logs.some(l => l.date === stats.todayISO) ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-400'}`}>
                        {g.krNumber.substring(0, 3)}
                      </button>
                    ))}
@@ -231,17 +203,17 @@ const App: React.FC = () => {
             <div className="lg:col-span-2"><AICoachPanel goals={goals} stats={stats} /></div>
           </div>
 
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl border border-gray-200 overflow-hidden flex flex-col">
-            {/* Header: Responsive Grid */}
-            <div className="grid grid-cols-[120px_1fr] md:grid-cols-[80px_200px_70px_70px_70px_70px_180px_1fr] bg-slate-800 text-white text-[9px] sm:text-[10px] font-black uppercase sticky top-0 z-30 shadow-lg">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl border border-gray-200 overflow-hidden flex flex-col relative">
+            {/* Header: Responsive Grid - 手機版寬度優化 */}
+            <div className="grid grid-cols-[100px_1fr] md:grid-cols-[80px_200px_70px_70px_70px_70px_180px_1fr] bg-slate-800 text-white text-[9px] sm:text-[10px] font-black uppercase sticky top-0 z-30 shadow-lg">
               <div className="hidden md:flex p-3 border-r border-slate-700 items-center justify-center">KR</div>
-              <div className="p-3 border-r border-slate-700 flex items-center justify-center text-blue-300 sticky left-0 bg-slate-800 z-10 shadow-[2px_0_5px_rgba(0,0,0,0.2)]">項目內容</div>
+              <div className="p-3 border-r border-slate-700 flex items-center justify-center text-blue-300 sticky left-0 bg-slate-800 z-10 shadow-[2px_0_5px_rgba(0,0,0,0.2)]">項目</div>
               <div className="hidden md:flex p-3 border-r border-slate-700 items-center justify-center">目標</div>
               <div className="hidden md:flex p-3 border-r border-slate-700 items-center justify-center">累積</div>
               <div className="hidden md:flex p-3 border-r border-slate-700 items-center justify-center">剩餘</div>
               <div className="hidden md:flex p-3 border-r border-slate-700 items-center justify-center text-emerald-400">％</div>
               <div className="hidden md:flex p-3 border-r border-slate-700 items-center justify-center">年度視覺</div>
-              <div className="flex overflow-x-auto no-scrollbar">
+              <div className="flex overflow-x-auto no-scrollbar relative">
                 {monthDays.map(d => (
                   <div key={d.iso} className={`flex-shrink-0 w-8 border-r border-slate-700 flex flex-col items-center justify-center py-1.5 ${d.isWeekend ? 'bg-slate-700' : ''}`}>
                     <span className="opacity-50 text-[7px] font-bold">{d.weekDay}</span>
@@ -251,7 +223,7 @@ const App: React.FC = () => {
               </div>
             </div>
 
-            <div className="divide-y divide-gray-100 max-h-[500px] sm:max-h-[600px] overflow-y-auto custom-scrollbar">
+            <div className="divide-y divide-gray-100 overflow-y-visible">
               {goals.map(goal => (
                 <GoalRow 
                   key={goal.id}
@@ -269,21 +241,20 @@ const App: React.FC = () => {
                 </div>
               )}
             </div>
+            
+            {/* 水平滑動指示器提示線 (僅手機版可見) */}
+            <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-black/5 to-transparent pointer-events-none md:hidden" />
           </div>
         </div>
       </main>
 
-      <footer className="bg-white border-t border-gray-200 h-14 sm:h-12 flex items-center shrink-0 px-2 overflow-x-auto z-50">
-        <div className="flex items-center space-x-1 p-1">
+      <footer className="bg-white border-t border-gray-200 h-16 sm:h-12 flex items-center shrink-0 px-2 overflow-hidden z-50 fixed bottom-0 left-0 right-0 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] pb-[env(safe-area-inset-bottom)]">
+        <div className="flex items-center space-x-1 p-1 overflow-x-auto no-scrollbar w-full">
            {[...Array(12)].map((_, i) => (
-             <button key={i} onClick={() => setSelectedMonth(i)} className={`px-4 py-2 sm:py-1.5 text-[11px] font-black rounded-lg transition-all whitespace-nowrap ${selectedMonth === i ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'text-slate-500 hover:bg-slate-100'}`}>
+             <button key={i} onClick={() => setSelectedMonth(i)} className={`px-4 py-1.5 text-[11px] font-black rounded-lg transition-all whitespace-nowrap ${selectedMonth === i ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-100'}`}>
                {i + 1}月
              </button>
            ))}
-        </div>
-        <div className="ml-auto hidden sm:flex items-center space-x-2 px-6 border-l border-gray-100 text-[9px] font-black text-slate-400 uppercase tracking-widest">
-           <span>Zenith OS v1.4</span>
-           <RefreshCw className="w-3 h-3" />
         </div>
       </footer>
 

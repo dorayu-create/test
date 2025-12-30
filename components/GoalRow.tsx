@@ -25,20 +25,22 @@ const GoalRow: React.FC<GoalRowProps> = ({ goal, yearProgress, monthDays, onLog,
   };
 
   return (
-    <div className={`grid grid-cols-[120px_1fr] md:grid-cols-[80px_200px_70px_70px_70px_70px_180px_1fr] items-stretch border-b border-gray-100 hover:bg-blue-50/40 transition-colors group bg-white`}>
+    <div className={`grid grid-cols-[100px_1fr] md:grid-cols-[80px_200px_70px_70px_70px_70px_180px_1fr] items-stretch border-b border-gray-100 group bg-white`}>
       {/* KR - Desktop Only */}
       <div className="hidden md:flex p-3 text-[10px] font-black text-slate-400 border-r border-gray-100 items-center justify-center text-center uppercase tracking-tighter">
         {goal.krNumber || 'KR'}
       </div>
 
-      {/* Title - Sticky on all devices for better horizontal scrolling */}
+      {/* Title - Sticky on all devices for better horizontal scrolling - Width reduced to 100px on mobile */}
       <div 
         className={`p-3 border-r border-gray-100 flex items-center justify-between sticky left-0 z-10 bg-white group-hover:bg-blue-50/40 shadow-[2px_0_5px_rgba(0,0,0,0.05)] ${isViewMode ? 'cursor-default' : 'cursor-pointer'}`} 
         onClick={() => !isViewMode && onEdit(goal)}
       >
-        <div className="truncate">
-          <p className={`text-[11px] sm:text-xs font-black truncate ${!isViewMode ? 'text-slate-800 group-hover:text-blue-600' : 'text-slate-600'}`}>{goal.title}</p>
-          <p className="text-[7px] sm:text-[8px] text-slate-400 font-bold uppercase">{goal.category}</p>
+        <div className="min-w-0 w-full">
+          <p className={`text-[10px] sm:text-xs font-black truncate leading-tight ${!isViewMode ? 'text-slate-800 group-hover:text-blue-600' : 'text-slate-600'}`}>
+            {goal.title}
+          </p>
+          <p className="text-[7px] text-slate-400 font-bold uppercase truncate">{goal.category}</p>
         </div>
       </div>
 
@@ -68,9 +70,9 @@ const GoalRow: React.FC<GoalRowProps> = ({ goal, yearProgress, monthDays, onLog,
               key={d.iso}
               disabled={isViewMode}
               onClick={() => onLog(goal.id, d.iso)}
-              className={`flex-shrink-0 w-8 h-full flex items-center justify-center transition-all ${
+              className={`flex-shrink-0 w-8 min-h-[44px] flex items-center justify-center transition-all ${
                 d.isWeekend ? 'bg-slate-100/50' : ''
-              } ${isViewMode ? 'cursor-default' : 'hover:bg-blue-100 active:scale-90'}`}
+              } ${isViewMode ? 'cursor-default' : 'hover:bg-blue-100 active:scale-90 active:bg-blue-200'}`}
             >
               {isLogged ? (
                 <div className={`w-5 h-5 rounded-md flex items-center justify-center shadow-sm ${isViewMode ? 'bg-slate-400' : 'bg-blue-600'}`}>
