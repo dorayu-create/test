@@ -83,14 +83,25 @@
         window.onunhandledrejection = (e) => showError(e.reason || 'Unhandled Promise Rejection');
      
     </script>
-  <script 
-  src="https://unpkg.com/@babel/standalone/babel.min.js"
-  data-plugins="transform-modules-umd">
-</script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 <script type="text/babel" data-presets="react,typescript">
-  // 直接在這裡寫 React 代碼測試，或者：
-  // 如果要引入外部，請確保伺服器支援 TSX 類型
+  // 這裡直接貼上原本 index.tsx 的內容
+  const { useState } = React;
+  const { createRoot } = ReactDOM;
+  // 記得從全域取得 Lucide 圖標，或者透過 importmap 引入的命名空間
+  
+  const App = () => {
+    return (
+      <div className="p-10 text-center">
+        <h1 className="text-4xl font-black text-blue-600">Zenith 2026 啟動成功</h1>
+        <p className="mt-4 text-slate-500">瀏覽器端編譯已就緒。</p>
+      </div>
+    );
+  };
+
+  const root = createRoot(document.getElementById('root'));
+  root.render(<App />);
 </script>
    
 </body>
