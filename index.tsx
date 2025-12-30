@@ -1,89 +1,109 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { 
-  Target, 
-  Sparkles, 
-  ChevronRight, 
-  LayoutDashboard, 
-  ListTodo, 
-  UserCircle 
+  Target, Sparkles, ChevronRight, LayoutDashboard, 
+  Calendar, Settings, BrainCircuit, Rocket, Plus
 } from 'lucide-react';
+import { GoogleGenerativeAI } from "@google/genai";
 
 const App = () => {
-  const [activeTab, setActiveTab] = useState('home');
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [loading, setLoading] = useState(false);
+
+  // 預留 Gemini API 邏輯
+  const generateStrategy = async () => {
+    setLoading(true);
+    // 這裡填入你的 API Key
+    const genAI = new GoogleGenerativeAI("YOUR_API_KEY_HERE");
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    
+    try {
+      // 模擬 AI 生成邏輯
+      console.log("AI 正在規劃 2026 策略...");
+    } catch (err) {
+      console.error("AI 生成失敗", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="flex flex-col h-screen bg-slate-50 text-slate-900 font-sans">
-      {/* 頂部導航 - 自動避開 iOS 瀏海 */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 pt-[env(safe-area-inset-top)] sticky top-0 z-20">
+    <div className="flex flex-col h-screen bg-[#fdfcfb] text-[#1e293b]">
+      {/* 頂部標題 */}
+      <header className="px-6 pt-[env(safe-area-inset-top)] bg-white/70 backdrop-blur-md border-b border-slate-100">
         <div className="h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-black rounded-xl flex items-center justify-center">
-              <Target className="text-white" size={20} />
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+              <Rocket className="text-white" size={18} />
             </div>
-            <h1 className="text-xl font-extrabold tracking-tight italic">ZENITH 2026</h1>
+            <span className="font-black tracking-tighter text-xl">ZENITH 2026</span>
           </div>
-          <button className="p-2 bg-indigo-50 text-indigo-600 rounded-full active:scale-90 transition-transform">
-            <Sparkles size={20} />
+          <button onClick={generateStrategy} className="p-2 hover:bg-blue-50 rounded-full transition-colors">
+            <Sparkles className={loading ? "animate-pulse text-blue-600" : "text-slate-400"} size={20} />
           </button>
         </div>
       </header>
 
       {/* 內容區 */}
-      <main className="flex-1 overflow-y-auto p-6 pb-32">
-        <section className="mb-8">
-          <p className="text-indigo-600 font-bold text-sm mb-1 uppercase tracking-widest">New Season</p>
-          <h2 className="text-3xl font-black text-slate-800 leading-tight">
-            你的年度策略<br/>已經準備就緒。
-          </h2>
-        </section>
+      <main className="flex-1 overflow-y-auto px-6 py-8 pb-32 no-scrollbar">
+        <div className="animate-fade-in">
+          <h2 className="text-4xl font-black tracking-tight mb-2">啟動策略。</h2>
+          <p className="text-slate-400 font-medium mb-8">將您的願景拆解為可執行的行動步驟。</p>
 
-        {/* 策略卡片 */}
-        <div className="space-y-4">
-          <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm active:bg-slate-50 transition-colors">
-            <div className="flex justify-between items-start mb-4">
-              <div className="p-3 bg-blue-50 text-blue-600 rounded-2xl">
-                <LayoutDashboard size={24} />
+          {/* 卡片區域 */}
+          <div className="grid gap-4">
+            <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
+              <div className="flex items-center justify-between mb-6">
+                <div className="bg-blue-50 p-3 rounded-2xl text-blue-600">
+                  <BrainCircuit size={24} />
+                </div>
+                <span className="text-[10px] font-black bg-blue-50 text-blue-600 px-2 py-1 rounded-full uppercase">AI Suggested</span>
               </div>
-              <span className="text-xs font-bold bg-slate-100 px-2 py-1 rounded-md">85% 完成</span>
+              <h3 className="text-xl font-bold mb-1">年度北極星目標</h3>
+              <p className="text-slate-400 text-sm mb-4">定義 2026 年最核心的成功指標</p>
+              <div className="flex -space-x-2">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[10px] font-bold">
+                    Q{i}
+                  </div>
+                ))}
+              </div>
             </div>
-            <h3 className="text-xl font-bold mb-1">年度核心目標</h3>
-            <p className="text-slate-500 text-sm mb-4">定義 2026 的三大北極星指標</p>
-            <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-              <div className="bg-blue-500 h-full w-[85%]"></div>
-            </div>
-          </div>
 
-          <div className="bg-slate-900 p-6 rounded-[2rem] text-white shadow-xl flex items-center justify-between">
-            <div>
-              <h3 className="text-xl font-bold mb-1">AI 助手諮詢</h3>
-              <p className="text-slate-400 text-sm">讓 Gemini 幫你拆解目標</p>
-            </div>
-            <div className="bg-white/10 p-4 rounded-2xl">
-              <ChevronRight size={24} />
+            <div className="bg-slate-900 p-6 rounded-[2rem] text-white flex items-center justify-between group active:scale-[0.98] transition-all">
+              <div className="flex items-center gap-4">
+                <div className="bg-white/10 p-3 rounded-2xl">
+                  <Target size={24} />
+                </div>
+                <div>
+                  <h3 className="font-bold">新增行動清單</h3>
+                  <p className="text-slate-400 text-xs">從一個小習慣開始改變</p>
+                </div>
+              </div>
+              <Plus size={20} className="text-slate-500 group-hover:text-white transition-colors" />
             </div>
           </div>
         </div>
       </main>
 
-      {/* 底部導航欄 */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-slate-100 px-8 pb-[env(safe-area-inset-bottom)]">
+      {/* 底部導航 */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-slate-100 px-10 pb-[env(safe-area-inset-bottom)]">
         <div className="h-20 flex items-center justify-between">
-          <NavBtn active={activeTab === 'home'} onClick={() => setActiveTab('home')} icon={<LayoutDashboard />} label="主頁" />
-          <NavBtn active={activeTab === 'tasks'} onClick={() => setActiveTab('tasks')} icon={<ListTodo />} label="清單" />
-          <NavBtn active={activeTab === 'me'} onClick={() => setActiveTab('me')} icon={<UserCircle />} label="個人" />
+          <NavIcon icon={<LayoutDashboard size={22}/>} active />
+          <NavIcon icon={<Calendar size={22}/>} />
+          <NavIcon icon={<Settings size={22}/>} />
         </div>
       </nav>
     </div>
   );
 };
 
-const NavBtn = ({ active, icon, label, onClick }) => (
-  <button onClick={onClick} className={`flex flex-col items-center gap-1 transition-colors ${active ? 'text-indigo-600' : 'text-slate-400'}`}>
-    {React.cloneElement(icon, { size: 24 })}
-    <span className="text-[10px] font-bold">{label}</span>
+const NavIcon = ({ icon, active = false }) => (
+  <button className={`p-2 transition-all ${active ? 'text-blue-600 scale-110' : 'text-slate-300'}`}>
+    {icon}
   </button>
 );
 
-const root = createRoot(document.getElementById('root'));
+const container = document.getElementById('root');
+const root = createRoot(container);
 root.render(<App />);
