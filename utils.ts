@@ -1,4 +1,3 @@
-
 import { YearStats, Goal } from './types.ts';
 
 export const getYearStats = (targetYear: number = 2026): YearStats => {
@@ -23,6 +22,51 @@ export const getYearStats = (targetYear: number = 2026): YearStats => {
     yearProgress: Math.min(100, (Math.max(0, elapsed) / totalDays) * 100),
     year
   };
+};
+
+export const calculateStreak = (logs: {date: string}[], todayISO: string) => {
+  if (!logs || logs.length === 0) return { current: 0, longest: 0 };
+  
+  const sortedDates = [...new Set(logs.map(l => l.date))].sort();
+  let longest = 0;
+  let current = 0;
+  let tempCurrent = 0;
+
+  // Longest calculation
+  for (let i = 0; i < sortedDates.length; i++) {
+    if (i > 0) {
+      const prev = new Date(sortedDates[i-1]);
+      const curr = new Date(sortedDates[i]);
+      const diff = (curr.getTime() - prev.getTime()) / (1000 * 3600 * 24);
+      if (diff === 1) {
+        tempCurrent++;
+      } else {
+        tempCurrent = 1;
+      }
+    } else {
+      tempCurrent = 1;
+    }
+    longest = Math.max(longest, tempCurrent);
+  }
+
+  // Current calculation
+  const lastDate = sortedDates[sortedDates.length - 1];
+  const lastDateObj = new Date(lastDate);
+  const todayObj = new Date(todayISO);
+  const diffFromToday = (todayObj.getTime() - lastDateObj.getTime()) / (1000 * 3600 * 24);
+
+  if (diffFromToday <= 1) {
+    let count = 0;
+    let checkDate = new Date(lastDate);
+    
+    while (sortedDates.includes(checkDate.toISOString().split('T')[0])) {
+      count++;
+      checkDate.setDate(checkDate.getDate() - 1);
+    }
+    current = count;
+  }
+
+  return { current, longest };
 };
 
 export const formatPercent = (val: number) => `${val.toFixed(1)}%`;
@@ -56,23 +100,12 @@ export const getDaysInMonth = (year: number, month: number) => {
   return days;
 };
 
-const compressGoals = (goals: Goal[]): any[] => {
-  return goals.map(g => ({
-    i: g.id, t: g.title, c: g.category, k: g.krNumber, tg: g.target, a: g.actual, u: g.unit,
-    l: g.logs.map(log => ({ d: log.date, v: log.value }))
-  }));
-};
-
-const decompressGoals = (data: any[]): Goal[] => {
-  return data.map(g => ({
-    id: g.i, title: g.t, category: g.c, krNumber: g.k, target: g.tg, actual: g.a, unit: g.u,
-    description: '', logs: g.l.map((log: any) => ({ date: log.d, value: log.v })), createdAt: Date.now()
-  }));
-};
-
 export const encodeDataForUrl = (goals: Goal[]): string => {
   try {
-    const compressed = compressGoals(goals);
+    const compressed = goals.map(g => ({
+      i: g.id, t: g.title, c: g.category, k: g.krNumber, tg: g.target, a: g.actual, u: g.unit,
+      l: g.logs.map(log => ({ d: log.date, v: log.value }))
+    }));
     const json = JSON.stringify(compressed);
     const utf8Bytes = new TextEncoder().encode(json);
     let binary = '';
@@ -95,7 +128,10 @@ export const decodeDataFromUrl = (base64: string): Goal[] | null => {
     for (let i = 0; i < binary.length; i++) { bytes[i] = binary.charCodeAt(i); }
     const json = new TextDecoder().decode(bytes);
     const data = JSON.parse(json);
-    return decompressGoals(data);
+    return data.map((g: any) => ({
+      id: g.i, title: g.t, category: g.c, krNumber: g.k, target: g.tg, actual: g.a, unit: g.u,
+      description: '', logs: g.l.map((log: any) => ({ date: log.d, value: log.v })), createdAt: Date.now()
+    }));
   } catch (e) {
     console.error('Decode Error:', e);
     return null;

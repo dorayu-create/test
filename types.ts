@@ -1,4 +1,3 @@
-
 export enum GoalCategory {
   GROWTH = '成長輸入',
   HEALTH = '生活習慣',
@@ -17,13 +16,18 @@ export interface Goal {
   id: string;
   title: string;
   category: GoalCategory;
-  krNumber: string; // 如 KR1, KR2
+  krNumber: string; 
   target: number;
   actual: number;
   unit: string;
   description: string;
   logs: DailyLog[];
   createdAt: number;
+}
+
+export interface Vision {
+  motto: string;
+  coreValues: string[];
 }
 
 export interface YearStats {
