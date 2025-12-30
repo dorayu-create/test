@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { YearStats } from '../types';
-import { formatPercent } from '../utils';
+import { YearStats } from '../types.ts';
+import { formatPercent } from '../utils.ts';
 
 interface DashboardProps {
   stats: YearStats;

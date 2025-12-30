@@ -6,13 +6,9 @@ import {
   Wallet, 
   Briefcase, 
   Users, 
-  Grid,
-  Zap,
-  Flame,
-  AlertCircle,
-  CheckCircle2
+  Grid
 } from 'lucide-react';
-import { GoalCategory } from './types';
+import { GoalCategory } from './types.ts';
 
 export const CATEGORY_ICONS: Record<GoalCategory, React.ReactNode> = {
   [GoalCategory.GROWTH]: <TrendingUp className="w-5 h-5 text-emerald-500" />,

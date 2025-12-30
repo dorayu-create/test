@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
 import { Sparkles, Loader2, RefreshCw } from 'lucide-react';
-import { getAICoachFeedback } from '../geminiService';
-import { Goal, YearStats } from '../types';
+import { getAICoachFeedback } from '../geminiService.ts';
+import { Goal, YearStats } from '../types.ts';
 
 interface AICoachPanelProps {
   goals: Goal[];

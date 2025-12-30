@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- PWA 與 iOS 獨立模式關鍵標籤 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Zenith2026">
@@ -13,6 +12,11 @@
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3649/3649463.png">
 
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Zenith 2026 年度策略規劃系統">
+    <meta property="og:description" content="最強大的年度目標管理工具，開啟你的 2026 高效人生。">
+    <meta property="og:image" content="https://cdn-icons-png.flaticon.com/512/3649/3649463.png">
+    
     <title>Zenith 2026 年度策略規劃系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,7 +33,7 @@
     </style>
 
     <script>
-        // 防止 process.env 引發的白屏錯誤
+        // 必須在所有模組加載前執行
         window.process = { env: { API_KEY: "" } };
         window.global = window;
     </script>
@@ -58,18 +62,17 @@
     
     <div id="error-display" class="error-overlay">
         <h1 style="color: #ef4444; font-weight: 900; margin-bottom: 10px;">系統啟動失敗</h1>
-        <p id="error-message" style="color: #64748b; font-size: 14px; max-width: 320px; font-family: monospace; word-break: break-all;"></p>
+        <p id="error-message" style="color: #64748b; font-size: 12px; max-width: 320px; font-family: monospace; word-break: break-all;"></p>
         <button onclick="localStorage.clear(); location.reload();" style="margin-top: 20px; background: #0f172a; color: white; padding: 12px 24px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer;">清除快取並重啟</button>
     </div>
 
     <script>
-        // 捕捉全域與非同步錯誤
         const handleError = (msg) => {
             document.getElementById('error-display').style.display = 'flex';
             document.getElementById('error-message').textContent = msg;
         };
         window.onerror = (msg) => handleError(msg);
-        window.onunhandledrejection = (e) => handleError(e.reason);
+        window.onunhandledrejection = (e) => handleError(e.reason || e);
     </script>
     
     <script type="module" src="./index.tsx"></script>
