@@ -25,20 +25,40 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; margin: 0; padding: 0; overflow: hidden; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #f8fafc; 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden; 
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
         #root { height: 100vh; overflow: hidden; }
-        .error-overlay { position: fixed; inset: 0; background: white; z-index: 9999; padding: 20px; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .error-overlay { 
+            position: fixed; 
+            inset: 0; 
+            background: white; 
+            z-index: 9999; 
+            padding: 20px; 
+            display: none; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            text-align: center; 
+        }
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         
         /* 針對 iOS 安全區域優化 */
         @supports (padding-top: env(safe-area-inset-top)) {
-            header {
-                padding-top: env(safe-area-inset-top);
-                height: calc(3.5rem + env(safe-area-inset-top));
-            }
+            .safe-pt { padding-top: env(safe-area-inset-top); }
+            .safe-pb { padding-bottom: env(safe-area-inset-bottom); }
         }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loader-spin { animation: spin 1s linear infinite; }
     </style>
 
     <script>
@@ -65,14 +85,10 @@
 <body>
     <div id="root">
         <div style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #64748b; background: #f8fafc;">
-            <div style="width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top: 4px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px;"></div>
-            <div style="font-weight: 800; font-size: 14px; letter-spacing: 0.05em; font-family: sans-serif;">ZENITH 系統啟動中...</div>
+            <div style="width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top: 4px solid #3b82f6; border-radius: 50%;" class="loader-spin"></div>
+            <div style="margin-top: 16px; font-weight: 800; font-size: 14px; letter-spacing: 0.05em; font-family: sans-serif;">ZENITH SYSTEM INITIALIZING...</div>
         </div>
     </div>
-    
-    <style>
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
     
     <div id="error-display" class="error-overlay">
         <h1 style="color: #ef4444; font-weight: 900; margin-bottom: 10px; font-size: 24px;">系統啟動失敗</h1>
